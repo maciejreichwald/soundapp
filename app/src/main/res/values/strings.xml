@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Song Viewer</string>
+    <string name="so_loader">Song List</string>
+    <string name="unknown">Unknown</string>
+    <string name="loading_error">Error during loading songs occurred</string>
+    <string name="no_questions_were_found">No questions were found</string>
+</resources>

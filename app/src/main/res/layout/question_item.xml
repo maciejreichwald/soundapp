@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_colossal"
+        android:foregroundGravity="center_vertical"
+        android:layout_centerVertical="true"
+        app:srcCompat="@drawable/user" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_giant"
+        android:layout_marginRight="@dimen/margin_colossal"
+        android:layout_toRightOf="@id/avatar"
+        android:maxLines="2"
+        android:textSize="@dimen/text_normal_size"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="TextView"/>
+
+    <TextView
+        android:id="@+id/user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/margin_colossal"
+        android:layout_toRightOf="@id/avatar"
+        android:layout_below="@id/title"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_small_size"
+        android:text="TextView" />
+</RelativeLayout>
