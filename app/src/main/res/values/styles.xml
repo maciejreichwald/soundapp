@@ -8,14 +8,14 @@
         <item name="android:windowActionBar" tools:ignore="NewApi">false</item>
         <item name="android:windowTitleSize">0dp</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@color/colorPrimary</item>
+        <item name="android:windowBackground">@color/primary</item>
         <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
         <item name="actionBarTheme">@style/ToolbarSearchView</item>
         <item name="android:textViewStyle">@style/Theme.AppCompat.Light.TextView</item>
 
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary</item>
+        <item name="colorAccent">@color/primary</item>
     </style>
 
     <style name="Theme.AppCompat.Light.TextView" parent="Theme.AppCompat.Light">
@@ -33,8 +33,8 @@
         <item name="searchViewStyle">@style/CustomSearchView</item>
         <item name="popupTheme">@style/CustomOverlay</item>
         <item name="titleTextAppearance">@style/TextAppearance.Widget.Event.Toolbar.Title</item>
-        <item name="android:background">@color/colorPrimary</item>
-        <item name="background">@color/colorPrimary</item>
+        <item name="android:background">@color/primary</item>
+        <item name="background">@color/primary</item>
         <item name="colorControlActivated">#ffffff</item>
     </style>
 
@@ -51,7 +51,7 @@
 
     <style name="CustomOverlay" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:colorBackground">@android:color/white</item>
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">@color/primary</item>
     </style>
 
     <style name="CustomSearchView" parent="Widget.AppCompat.SearchView">
@@ -64,4 +64,18 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="FloatingFilter">
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_marginBottom">@dimen/margin_colossal</item>
+        <item name="android:layout_marginRight">@dimen/margin_colossal</item>
+        <item name="elevation">6dp</item>
+        <item name="pressedTranslationZ">12dp</item>
+        <item name="borderWidth">0dp</item>
+    </style>
+
+    <style name="FilterBackground">
+        <item name="android:background">@color/filter_grey</item>
+    </style>
 </resources>

@@ -2,38 +2,26 @@ package com.rudearts.soloader.ui.main
 
 import android.content.Context
 import android.content.ContextWrapper
-import android.text.TextUtils
-import com.rudearts.soloader.R
-import com.rudearts.soloader.api.ExternalMapper
-import com.rudearts.soloader.api.RestController
-import com.rudearts.soloader.model.external.response.SearchResponse
+import com.rudearts.soloader.model.filter.TrackFilter
+import com.rudearts.soloader.model.local.Track
+import com.rudearts.soloader.util.loader.TrackLoader
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import retrofit2.Response
 
-class MainPresenter(base:Context, view:MainContract.View) : ContextWrapper(base), MainContract.Presenter {
+class MainPresenter(base:Context, val view:MainContract.View) : ContextWrapper(base), MainContract.Presenter {
 
-    private val view = view
+    private val loader = TrackLoader(this)
 
-    private val restController = RestController.instance
-    private val mapper = ExternalMapper(this)
-
-    override fun loadQuestions(query:String) {
+    override fun loadTracks(filter:TrackFilter) {
         view.updateLoadingState(true)
 
-        performSearch(query)
+        loader.loadTracks(filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         {onItemsLoaded(it)},
                         {onError(it)})
     }
-
-    private fun performSearch(query: String) = when(TextUtils.isEmpty(query)) {
-        true -> restController.restApi.questions()
-        false -> restController.restApi.search(query)
-    }
-
 
     private fun onError(error: Throwable) {
         error.printStackTrace()
@@ -42,21 +30,13 @@ class MainPresenter(base:Context, view:MainContract.View) : ContextWrapper(base)
         handleMessagesError(error.toString())
     }
 
-    private fun onItemsLoaded(response: Response<SearchResponse>) {
+    private fun onItemsLoaded(items:List<Track>) {
         view.updateLoadingState(false)
-
-        if (!response.isSuccessful) {
-            handleMessagesError(getString(R.string.loading_error))
-            return
-        }
-
-        val itemsExternal = response.body()?.items ?: ArrayList()
-        val items = itemsExternal.map { mapper.question2local(it) }
-        view.updateItems(items)
+        view.updateTracks(items)
     }
 
     private fun handleMessagesError(message: String) {
         view.showMessage(message)
-        view.updateItems(ArrayList())
+        view.updateTracks(ArrayList())
     }
 }

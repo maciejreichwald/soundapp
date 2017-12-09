@@ -1,12 +1,12 @@
 package com.rudearts.soloader.ui.details
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.rudearts.soloader.R
 import com.rudearts.soloader.extentions.bind
+import com.rudearts.soloader.extentions.visible
 import com.rudearts.soloader.ui.ToolbarActivity
 
 class DetailsActivity : ToolbarActivity() {
@@ -29,21 +29,25 @@ class DetailsActivity : ToolbarActivity() {
         setupWebView()
     }
 
-    private fun setupWebView() {
-        webView.settings.javaScriptEnabled = true
-        webView.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView?, url: String?) {
-                progressBar.visibility = View.GONE
-                super.onPageFinished(view, url)
-            }
+    private fun setupWebView() = with (webView) {
+            //settings.javaScriptEnabled = true
+            webViewClient = createWebViewClient()
+            loadUrl(intent.getStringExtra(LINK))
+    }
+
+    private fun createWebViewClient() = object : WebViewClient() {
+        override fun onPageFinished(view: WebView?, url: String?) {
+            progressBar.visible = false
+            super.onPageFinished(view, url)
         }
-        webView.loadUrl(intent.getStringExtra(LINK))
     }
 
     private fun setupTitle() {
         setTitle(intent.getStringExtra(TITLE))
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setDisplayShowHomeEnabled(true)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -53,12 +57,10 @@ class DetailsActivity : ToolbarActivity() {
 
     override fun provideSubContentViewId() = R.layout.activity_details
 
-    override fun onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack()
-            return
+    override fun onBackPressed() = with(webView) {
+        when(canGoBack()) {
+            true -> goBack()
+            false -> super.onBackPressed()
         }
-
-        super.onBackPressed()
     }
 }

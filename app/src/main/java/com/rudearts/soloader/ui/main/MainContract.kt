@@ -1,16 +1,17 @@
 package com.rudearts.soloader.ui.main
 
-import com.rudearts.soloader.model.local.Question
+import com.rudearts.soloader.model.filter.TrackFilter
+import com.rudearts.soloader.model.local.Track
 
 interface MainContract {
 
     interface View {
         fun updateLoadingState(isLoading:Boolean)
-        fun updateItems(questions:List<Question>)
+        fun updateTracks(questions:List<Track>)
         fun showMessage(message:String)
     }
 
     interface Presenter {
-        fun loadQuestions(query:String)
+        fun loadTracks(filter:TrackFilter)
     }
 }

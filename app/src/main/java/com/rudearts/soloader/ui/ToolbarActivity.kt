@@ -1,6 +1,5 @@
 package com.rudearts.soloader.ui
 
-import android.graphics.drawable.ColorDrawable
 import android.support.v4.content.ContextCompat
 import android.os.Bundle
 import android.support.annotation.LayoutRes
@@ -13,13 +12,15 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import com.rudearts.soloader.R
 import com.rudearts.soloader.extentions.bind
+import com.rudearts.soloader.extentions.visible
 
 
 abstract class ToolbarActivity : AppCompatActivity() {
 
-    protected val toolbar:Toolbar by bind(R.id.toolbar)
     protected val searchView:SearchView by bind(R.id.menu_search)
+    private val toolbar:Toolbar by bind(R.id.toolbar)
     private val toolbarTitle:TextView by bind(R.id.toolbar_title)
+    protected val coordinatorLayout:CoordinatorLayout by bind(R.id.coordinator_layout)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,28 +38,20 @@ abstract class ToolbarActivity : AppCompatActivity() {
         toolbarTitle.text = title
     }
 
-    private fun includeSubview() {
-        val id = provideSubContentViewId()
-        View.inflate(this, id, findViewById(R.id.coordinator_layout))
-    }
+    private fun includeSubview() =
+            View.inflate(this, provideSubContentViewId(), coordinatorLayout)
 
-    protected fun showSnackMessage(message: String) {
-        coordinatorLayout?.let {
-            Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show()
-        }
+    protected fun showSnackMessage(message: String) = coordinatorLayout?.let {
+        Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show()
     }
 
     protected fun showSearchView() {
-        searchView.visibility = View.VISIBLE
+        searchView.visible = true
     }
 
     private fun setupActionBar() {
         setSupportActionBar(toolbar)
-        toolbar?.setTitleTextColor(ContextCompat.getColor(this, R.color.colorPrimary))
-    }
-
-    val coordinatorLayout by lazy {
-        findViewById<CoordinatorLayout>(R.id.coordinator_layout)
+        toolbar?.setTitleTextColor(ContextCompat.getColor(this, R.color.primary))
     }
 
     abstract fun provideSubContentViewId(): Int

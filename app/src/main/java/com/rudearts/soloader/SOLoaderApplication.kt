@@ -10,6 +10,6 @@ class SOLoaderApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        restController.init()
+        restController.setup()
     }
 }

@@ -1,4 +1,4 @@
-package com.rudearts.soloader.model.asset
+package com.rudearts.soloader.model.external
 
 import com.google.gson.annotations.SerializedName
 
@@ -8,5 +8,5 @@ data class TrackAsset (
         @SerializedName("ARTIST CLEAN")
         val artist:String?,
         @SerializedName("Release Year")
-        val releaseDate:String?
+        val releaseDate:TrackNumber?
 )

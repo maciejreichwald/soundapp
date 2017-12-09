@@ -16,15 +16,14 @@ class RestController private constructor() {
     private object Holder { val INSTANCE = RestController() }
 
     companion object {
-        val END_POINT = "https://api.stackexchange.com/docs/"
-        const val QUERY_ITEMS_COUNT = 50
+        val END_POINT = "https://itunes.apple.com"
         val instance: RestController by lazy { Holder.INSTANCE }
     }
 
     lateinit var restApi: RestAPI
         private set
 
-    fun init() {
+    fun setup() {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 

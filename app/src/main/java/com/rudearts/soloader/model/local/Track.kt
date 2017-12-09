@@ -1,10 +1,13 @@
 package com.rudearts.soloader.model.local
 
+import java.util.*
+
 data class Track(
         val name:String,
         val artist:String,
-        val releaseDate:Long,
-        val smallIcon:String?,
-        val bigIcon:String?,
-        val previewUrl:String?
+        val releaseDate:Date,
+        val smallIcon:String?=null,
+        val bigIcon:String?=null,
+        val trackPreviewUrl:String?=null,
+        val fileUrl:String?=null
 )

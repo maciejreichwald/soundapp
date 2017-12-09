@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
@@ -27,4 +28,24 @@
             android:layout_height="match_parent"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <RelativeLayout
+        android:id="@+id/filter_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        style="@style/FilterBackground"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/secondary_filter_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/search_close"
+        style="@style/FloatingFilter"/>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/primary_filter_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/filters_icon"
+        style="@style/FloatingFilter"/>
+
 </RelativeLayout>
