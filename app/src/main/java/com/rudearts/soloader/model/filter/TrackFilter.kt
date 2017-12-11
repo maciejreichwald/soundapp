@@ -5,5 +5,4 @@ data class TrackFilter(
         val query: String,
         val type: SearchType,
         val source: SourceType,
-        val sort: SortType
-)
+        val sort: SortType)

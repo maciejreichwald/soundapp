@@ -1,13 +1,13 @@
 package com.rudearts.soloader.ui.main.filter
 
 
-import android.content.Context
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Spinner
 
 import com.rudearts.soloader.R
@@ -17,6 +17,8 @@ import com.rudearts.soloader.model.filter.*
 import com.rudearts.soloader.util.animation.RotatedFadeAnimator
 
 class FilterFragment : Fragment(), FilterContract.View {
+
+    private val presenter:FilterContract.Presenter = FilterPresenter()
 
     private var fadeAnimator: RotatedFadeAnimator? = null
     private var inflater: LayoutInflater? = null
@@ -66,12 +68,28 @@ class FilterFragment : Fragment(), FilterContract.View {
         container = view?.findViewById(R.id.container)
     }
 
-    override fun showAnimated() {
+    override fun activatedAnimated(query:String) {
+        presenter.storeFilter(getFilter(query))
         view?.let { fadeAnimator?.startFadeIn(it) }
     }
 
     override fun hideAnimated() {
         view?.let { fadeAnimator?.startFadeOut(it) }
+    }
+
+    override fun restoreFilter() {
+        restoreFilter(presenter.retrieveFilter())
+    }
+
+    private fun restoreFilter(filter: TrackFilter?) = filter?.let{
+        restoreSpinnerSelection(dropSearchType, filter.type)
+        restoreSpinnerSelection(dropSource, filter.source)
+        restoreSpinnerSelection(dropSort, filter.sort)
+    }
+
+    private fun <T>restoreSpinnerSelection(spinner: Spinner?, value: T) = spinner?.let {
+        val adapter = spinner.adapter as ArrayAdapter<T>
+        spinner.setSelection(adapter.getPosition(value))
     }
 
     override fun hide() {
@@ -80,9 +98,11 @@ class FilterFragment : Fragment(), FilterContract.View {
 
     override fun isShown(): Boolean = view?.isShown ?: false
 
-    override fun getFilter() = TrackFilter(
-            "",
+    override fun getFilter(query: String): TrackFilter = TrackFilter(
+            query,
             dropSearchType?.selectedItem as SearchType,
             dropSource?.selectedItem as SourceType,
             dropSort?.selectedItem as SortType)
+
+    override fun hasFilterChanged(query:String) = presenter.checkFilterChanged(getFilter(query))
 }

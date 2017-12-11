@@ -14,10 +14,6 @@ import com.rudearts.soloader.R
 import com.rudearts.soloader.extentions.bind
 import com.rudearts.soloader.extentions.bindFragment
 import com.rudearts.soloader.extentions.visible
-import com.rudearts.soloader.model.filter.SearchType
-import com.rudearts.soloader.model.filter.SortType
-import com.rudearts.soloader.model.filter.SourceType
-import com.rudearts.soloader.model.filter.TrackFilter
 import com.rudearts.soloader.model.local.Track
 import com.rudearts.soloader.ui.ToolbarActivity
 import com.rudearts.soloader.ui.details.DetailsActivity
@@ -81,7 +77,8 @@ class MainActivity : ToolbarActivity(), MainContract.View {
     }
 
     private fun loadItems() {
-        presenter.loadTracks(TrackFilter(searchView.query.toString(), SearchType.SONG, SourceType.BOTH, SortType.SONG))
+        val filter = filterView.getFilter(searchView.query.toString())
+        presenter.loadTracks(filter)
     }
 
     private fun setupList() {
@@ -132,18 +129,26 @@ class MainActivity : ToolbarActivity(), MainContract.View {
         btnFilterPrimary.setOnClickListener { animateShowFilter() }
         btnFilterSecondary.setOnClickListener { onSecondaryClick() }
 
-        filterBackground.setOnClickListener { animateHideFilter() }
+        filterBackground.setOnClickListener { onFilterBackgroundClick() }
         filterBackground.visible = false
 
         filterView.hide()
+    }
+
+    private fun onFilterBackgroundClick() {
+        filterView.restoreFilter()
+        animateHideFilter()
     }
 
     private fun onSecondaryClick() {
         animateHideFilter()
         hideKeyboard()
         hideSearchQueryIfEmpty()
-        loadItems()
+
+        if(hasFilterChanged()) loadItems()
     }
+
+    private fun hasFilterChanged() = filterView.hasFilterChanged(searchView.query.toString())
 
     private fun hideSearchQueryIfEmpty() = with(searchView) {
         if (isIconified or !TextUtils.isEmpty(query)) return
@@ -166,7 +171,7 @@ class MainActivity : ToolbarActivity(), MainContract.View {
     }
 
     private fun animateFilterView(showFilter: Boolean) = when(showFilter) {
-        true -> filterView.showAnimated()
+        true -> filterView.activatedAnimated(searchView.query.toString())
         false -> filterView.hideAnimated()
     }
 
