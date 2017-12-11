@@ -11,6 +11,8 @@ import android.text.TextUtils
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.rudearts.soundapp.R
+import com.rudearts.soundapp.SongApplication
+import com.rudearts.soundapp.di.BasicModule
 import com.rudearts.soundapp.extentions.bind
 import com.rudearts.soundapp.extentions.bindFragment
 import com.rudearts.soundapp.extentions.visible
@@ -21,9 +23,12 @@ import com.rudearts.soundapp.ui.main.filter.FilterContract
 import com.rudearts.soundapp.ui.main.filter.FilterFragment
 import com.rudearts.soundapp.util.animation.CircularRevealAnimator
 import com.rudearts.soundapp.util.animation.RotatedFadeAnimator
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
 
 
-class MainActivity : ToolbarActivity(), MainContract.View {
+class MainActivity : ToolbarActivity(), MainContract.View, Injects<BasicModule> {
 
     private val refreshLayout: SwipeRefreshLayout by bind(R.id.swipe_container)
     private val progressBar: View by bind(R.id.progress_bar)
@@ -34,25 +39,32 @@ class MainActivity : ToolbarActivity(), MainContract.View {
     private val filterBackground: View by bind(R.id.filter_background)
     private val filterView:FilterContract.View by bindFragment<FilterFragment>(R.id.filter_view)
 
-    private val circularAnimator = CircularRevealAnimator(this)
-    private val fadeAnimator = RotatedFadeAnimator(this)
+    private val circularAnimator by required { circularAnimator }
+    private val fadeAnimator by required { fadeAnimator }
 
-    private val presenter: MainContract.Presenter = MainPresenter(this, this)
+    private lateinit var presenter: MainContract.Presenter
     private lateinit var adapter: TrackAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        inject(SongApplication.module(this))
+
         setTitle(getString(R.string.so_loader))
         setup()
     }
 
     private fun setup() {
+        setupPresenter()
         showSearchView()
         setupFilterRelatedViews()
         setupList()
         setupRefresh()
         setupSearchView()
         loadItems()
+    }
+
+    private fun setupPresenter() {
+        presenter = MainPresenter(this, this)
     }
 
     private fun setupRefresh() = refreshLayout.setOnRefreshListener {

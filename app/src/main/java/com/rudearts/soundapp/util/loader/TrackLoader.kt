@@ -4,9 +4,11 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.text.TextUtils
 import com.google.gson.GsonBuilder
+import com.rudearts.soundapp.SongApplication
 import com.rudearts.soundapp.api.ExternalMapper
 import com.rudearts.soundapp.api.RestController
 import com.rudearts.soundapp.controller.AssetController
+import com.rudearts.soundapp.di.BasicModule
 import com.rudearts.soundapp.model.external.TrackAsset
 import com.rudearts.soundapp.model.external.TrackNumber
 import com.rudearts.soundapp.model.external.response.SearchResponse
@@ -18,8 +20,11 @@ import com.rudearts.soundapp.model.local.Track
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import retrofit2.Response
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
 
-class TrackLoader(base:Context) : ContextWrapper(base) {
+class TrackLoader(base:Context) : ContextWrapper(base), Injects<BasicModule> {
 
     companion object {
         const val QUERY_ITEMS_COUNT = 200
@@ -27,10 +32,14 @@ class TrackLoader(base:Context) : ContextWrapper(base) {
         private val ASSET_PATH = "songs.json"
     }
 
-    private val assetLoader = AssetLoader(this)
-    private val assetController = AssetController.instance
-    private val restController = RestController.instance
-    private val mapper = ExternalMapper(this)
+    private val assetLoader by required { assetLoader }
+    private val assetController by required { assetController }
+    private val restController by required { restController }
+    private val mapper by required { mapper }
+
+    init {
+        inject(SongApplication.module(this))
+    }
 
     fun loadTracks(filter:TrackFilter):Single<List<Track>> = Single.zip(
             createSearchRequest(filter),

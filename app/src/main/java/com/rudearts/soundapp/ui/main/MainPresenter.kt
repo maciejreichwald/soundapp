@@ -2,15 +2,24 @@ package com.rudearts.soundapp.ui.main
 
 import android.content.Context
 import android.content.ContextWrapper
+import com.rudearts.soundapp.SongApplication
+import com.rudearts.soundapp.di.BasicModule
 import com.rudearts.soundapp.model.filter.TrackFilter
 import com.rudearts.soundapp.model.local.Track
 import com.rudearts.soundapp.util.loader.TrackLoader
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
 
-class MainPresenter(base:Context, val view:MainContract.View) : ContextWrapper(base), MainContract.Presenter {
+class MainPresenter(base:Context, val view:MainContract.View) : ContextWrapper(base), MainContract.Presenter, Injects<BasicModule> {
 
-    private val loader = TrackLoader(this)
+    private val loader by required { trackLoader }
+
+    init {
+        inject(SongApplication.module(this))
+    }
 
     override fun loadTracks(filter:TrackFilter) {
         view.updateLoadingState(true)

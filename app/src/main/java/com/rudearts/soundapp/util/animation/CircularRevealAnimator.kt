@@ -70,9 +70,11 @@ class CircularRevealAnimator(base:Context) : ContextWrapper(base) {
     }
 
     private fun initAnimation(animation: Animation?, animationResourceId:Int) = when(animation) {
-        null -> AnimationUtils.loadAnimation(this, animationResourceId)
+        null -> loadAnimation(animationResourceId)
         else -> animation
     }
+
+    private fun loadAnimation(resourceId: Int) = AnimationUtils.loadAnimation(this, resourceId)
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun startLollipopCircularHide(animatedView:View, startPointView:View, container:View) {

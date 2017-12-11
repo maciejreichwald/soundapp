@@ -8,7 +8,7 @@ import android.view.animation.AnimationUtils
 import com.rudearts.soundapp.R
 import com.rudearts.soundapp.extentions.visible
 
-class RotatedFadeAnimator(base:Context, private val rotatable:Boolean = true) : ContextWrapper(base) {
+class RotatedFadeAnimator(base:Context, var rotatable:Boolean = true) : ContextWrapper(base) {
 
     private var fadeIn: Animation? = null
     private var fadeOut: Animation? = null

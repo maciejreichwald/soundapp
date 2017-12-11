@@ -6,24 +6,34 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.rudearts.soundapp.R
+import com.rudearts.soundapp.SongApplication
+import com.rudearts.soundapp.di.BasicModule
 import com.rudearts.soundapp.extentions.loadUrlThumb
 import com.rudearts.soundapp.model.local.Track
 import com.rudearts.soundapp.util.DateUtil
 import kotlinx.android.synthetic.main.song_item.view.*
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
 import java.util.*
 
-class TrackAdapter(context:Context, items: List<Track>, private val listener: (Track) ->Unit) : RecyclerView.Adapter<TrackAdapter.ViewHolder>() {
+class TrackAdapter(context:Context, items: List<Track>, private val listener: (Track) ->Unit) : RecyclerView.Adapter<TrackAdapter.ViewHolder>(), Injects<BasicModule> {
 
     companion object {
         val DEFAULT_IMAGE_SIZE = 150
         val MIN_YEAR = 500L
     }
 
-    private val dateUtil = DateUtil.instance
+    private val dateUtil by required { dateUtil }
+
     private val inflater = LayoutInflater.from(context)
     private var items = items
 
     private val unknownText = context.getString(R.string.none)
+
+    init {
+        inject(SongApplication.module(context))
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
              ViewHolder(inflater.inflate(R.layout.song_item, parent, false))

@@ -11,16 +11,20 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 
 import com.rudearts.soundapp.R
+import com.rudearts.soundapp.SongApplication
 import com.rudearts.soundapp.databinding.SingleFilterViewBinding
+import com.rudearts.soundapp.di.BasicModule
 import com.rudearts.soundapp.extentions.visible
 import com.rudearts.soundapp.model.filter.*
-import com.rudearts.soundapp.util.animation.RotatedFadeAnimator
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
 
-class FilterFragment : Fragment(), FilterContract.View {
+class FilterFragment : Fragment(), FilterContract.View, Injects<BasicModule> {
 
     private val presenter:FilterContract.Presenter = FilterPresenter()
+    private val fadeAnimator by required { fadeAnimator }
 
-    private var fadeAnimator: RotatedFadeAnimator? = null
     private var inflater: LayoutInflater? = null
 
     private var container:ViewGroup? = null
@@ -63,9 +67,11 @@ class FilterFragment : Fragment(), FilterContract.View {
     }
 
     private fun setupContextVariables() = context?.let {
-        fadeAnimator = RotatedFadeAnimator(it, false)
+        inject(SongApplication.module(it))
+
         inflater = LayoutInflater.from(it)
         container = view?.findViewById(R.id.container)
+        fadeAnimator.rotatable = false
     }
 
     override fun activatedAnimated(query:String) {
