@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="titlable"
+            type="com.rudearts.soloader.model.filter.Titlable"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/FilterItemTitle"
+            android:text="@{titlable.getTitleId}"
+            tools:text="TextView"/>
+    </RelativeLayout>
+</layout>

@@ -24,8 +24,9 @@ class RestController private constructor() {
         private set
 
     fun setup() {
-        val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        val httpLoggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
 
         val client = OkHttpClient.Builder()
                 .addInterceptor(httpLoggingInterceptor)

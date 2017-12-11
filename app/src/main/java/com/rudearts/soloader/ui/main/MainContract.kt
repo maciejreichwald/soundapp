@@ -7,7 +7,7 @@ interface MainContract {
 
     interface View {
         fun updateLoadingState(isLoading:Boolean)
-        fun updateTracks(questions:List<Track>)
+        fun updateTracks(tracks:List<Track>)
         fun showMessage(message:String)
     }
 

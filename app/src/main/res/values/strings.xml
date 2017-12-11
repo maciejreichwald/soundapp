@@ -2,6 +2,20 @@
     <string name="app_name">Song Viewer</string>
     <string name="so_loader">Song List</string>
     <string name="unknown">Unknown</string>
+    <string name="none">None</string>
     <string name="loading_error">Error during loading songs occurred</string>
-    <string name="no_questions_were_found">No questions were found</string>
+    <string name="no_song_were_found">No songs were found</string>
+    <string name="no_details">No details were found</string>
+
+    <string name="source">Source</string>
+    <string name="search_type">Search type</string>
+    <string name="sort_by">Sort by</string>
+
+    <string name="source_rest">iTunes</string>
+    <string name="source_asset">Embed</string>
+    <string name="source_both">iTunes &amp; Embed</string>
+
+    <string name="song">Song</string>
+    <string name="artist">Artist</string>
+    <string name="release_date">Release date</string>
 </resources>

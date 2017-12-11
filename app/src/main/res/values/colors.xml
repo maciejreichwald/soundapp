@@ -5,4 +5,5 @@
     <color name="accent">#4089ff</color>
 
     <color name="filter_grey">#80101010</color>
+    <color name="primary_semi_transparent">#793f51b5</color>
 </resources>

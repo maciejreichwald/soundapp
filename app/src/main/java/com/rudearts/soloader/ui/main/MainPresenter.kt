@@ -30,13 +30,13 @@ class MainPresenter(base:Context, val view:MainContract.View) : ContextWrapper(b
         handleMessagesError(error.toString())
     }
 
-    private fun onItemsLoaded(items:List<Track>) {
-        view.updateLoadingState(false)
-        view.updateTracks(items)
+    private fun onItemsLoaded(items:List<Track>) = with(view) {
+        updateLoadingState(false)
+        updateTracks(items)
     }
 
-    private fun handleMessagesError(message: String) {
-        view.showMessage(message)
-        view.updateTracks(ArrayList())
+    private fun handleMessagesError(message: String) = with(view) {
+        showMessage(message)
+        updateTracks(ArrayList())
     }
 }

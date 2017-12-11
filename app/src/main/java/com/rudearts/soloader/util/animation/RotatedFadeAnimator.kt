@@ -1,41 +1,60 @@
 package com.rudearts.soloader.util.animation
 
-import android.animation.Animator
-import android.animation.AnimatorInflater
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.ContextWrapper
-import android.os.Build
 import android.view.View
-import android.view.ViewAnimationUtils
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import com.rudearts.soloader.R
 import com.rudearts.soloader.extentions.visible
 
-class RotatedFadeAnimator(base:Context) : ContextWrapper(base) {
+class RotatedFadeAnimator(base:Context, private val rotatable:Boolean = true) : ContextWrapper(base) {
 
-    private var fadeIn: Animation = AnimationUtils.loadAnimation(this, R.anim.rotate_fade_in)
-    private var fadeOut: Animation = AnimationUtils.loadAnimation(this, R.anim.rotate_fade_out)
+    private var fadeIn: Animation? = null
+    private var fadeOut: Animation? = null
 
-    fun startFadeIn(btn:View, listener: Animation.AnimationListener) =
-            startFadeAnimation(btn, fadeIn, listener)
-
-    fun startFadeOut(btn:View, listener: Animation.AnimationListener) =
-            startFadeAnimation(btn, fadeOut, listener)
-
-    fun hasStartedAnyFade() = hasStartedFadeIn() or hasStartedFadeOut()
-
-    fun hasStartedFadeIn() = hasAnimationStarted(fadeIn)
-    fun hasStartedFadeOut() = hasAnimationStarted(fadeOut)
-
-    private fun hasAnimationStarted(animation: Animation) = with(animation) {
-        hasStarted() and !hasEnded()
+    private fun initAnimation(animation: Animation?, animationResourceId:Int) = when(animation) {
+        null -> AnimationUtils.loadAnimation(this, animationResourceId)
+        else -> animation
     }
 
-    private fun startFadeAnimation(btn: View, animation: Animation, listener:Animation.AnimationListener) {
+    fun startFadeIn(btn:View) {
+        fadeIn = initAnimation(fadeIn, getResourceId4FadeIn())
+        startFadeAnimation(btn, fadeIn, createFadeListener(btn, true))
+        btn.visible = true
+    }
+
+    fun startFadeOut(btn:View) {
+        fadeOut = initAnimation(fadeOut, getResourceId4FadeOut())
+        startFadeAnimation(btn, fadeOut, createFadeListener(btn, false))
+    }
+
+    private fun getResourceId4FadeIn() = when(rotatable) {
+        true -> R.anim.rotate_fade_in
+        false -> R.anim.filter_fade_in
+    }
+
+    private fun getResourceId4FadeOut() = when(rotatable) {
+        true -> R.anim.rotate_fade_out
+        false -> R.anim.fade_out
+    }
+
+    private fun createFadeListener(view: View, visible: Boolean) = object : BaseAnimationListener() {
+        override fun onAnimationEnd(animation: Animation?) {
+            view.visible = visible
+        }
+    }
+
+    fun hasStartedAnyFade() = hasAnimationStarted(fadeIn) or hasAnimationStarted(fadeOut)
+
+    private fun hasAnimationStarted(animation: Animation?) = when(animation) {
+        null -> false
+        else -> animation.hasStarted() and !animation.hasEnded()
+    }
+
+    private fun startFadeAnimation(btn: View, animation: Animation?, listener:Animation.AnimationListener) {
         btn.startAnimation(animation)
-        animation.setAnimationListener(listener)
+        animation?.setAnimationListener(listener)
     }
 
 }

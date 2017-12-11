@@ -1,5 +1,11 @@
 package com.rudearts.soloader.model.filter
 
-enum class SortType {
-    SONG, ARTIST, RELEASE_DATE
+import com.rudearts.soloader.R
+
+enum class SortType(private val textId:Int) : Titlable {
+    SONG(R.string.song),
+    ARTIST(R.string.artist),
+    RELEASE_DATE(R.string.release_date);
+
+    override fun getTitleId() = textId
 }

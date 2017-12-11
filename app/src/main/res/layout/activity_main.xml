@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/no_questions_were_found"/>
+        android:text="@string/no_song_were_found"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_container"
@@ -35,17 +35,23 @@
         android:layout_height="match_parent"
         style="@style/FilterBackground"/>
 
+    <fragment
+        android:name="com.rudearts.soloader.ui.main.filter.FilterFragment"
+        android:id="@+id/filter_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/secondary_filter_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/search_close"
+        android:src="@drawable/search_fab"
         style="@style/FloatingFilter"/>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/primary_filter_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/filters_icon"
+        android:src="@drawable/filter_icon"
         style="@style/FloatingFilter"/>
 
 </RelativeLayout>

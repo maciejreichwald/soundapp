@@ -17,7 +17,7 @@ class ExternalMapper(base:Context) : ContextWrapper(base) {
     }
 
     fun track2local(track:TrackAsset) = with(track) {
-        Track(text2unknown(name), text2unknown(artist), dateUtil.long2date(releaseDate?.value))
+        Track(text2unknown(name), text2unknown(artist), dateUtil.year2date(releaseDate?.value))
     }
 
     private fun text2unknown(text:String?) = text ?: getString(R.string.unknown)

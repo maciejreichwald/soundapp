@@ -1,15 +1,18 @@
 package com.rudearts.soloader.ui.main
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
 import android.view.View
-import android.view.animation.Animation
+import android.view.inputmethod.InputMethodManager
 import com.rudearts.soloader.R
 import com.rudearts.soloader.extentions.bind
+import com.rudearts.soloader.extentions.bindFragment
 import com.rudearts.soloader.extentions.visible
 import com.rudearts.soloader.model.filter.SearchType
 import com.rudearts.soloader.model.filter.SortType
@@ -18,7 +21,8 @@ import com.rudearts.soloader.model.filter.TrackFilter
 import com.rudearts.soloader.model.local.Track
 import com.rudearts.soloader.ui.ToolbarActivity
 import com.rudearts.soloader.ui.details.DetailsActivity
-import com.rudearts.soloader.util.animation.BaseAnimationListener
+import com.rudearts.soloader.ui.main.filter.FilterContract
+import com.rudearts.soloader.ui.main.filter.FilterFragment
 import com.rudearts.soloader.util.animation.CircularRevealAnimator
 import com.rudearts.soloader.util.animation.RotatedFadeAnimator
 
@@ -32,6 +36,7 @@ class MainActivity : ToolbarActivity(), MainContract.View {
     private val btnFilterPrimary: FloatingActionButton by bind(R.id.primary_filter_btn)
     private val btnFilterSecondary: FloatingActionButton by bind(R.id.secondary_filter_btn)
     private val filterBackground: View by bind(R.id.filter_background)
+    private val filterView:FilterContract.View by bindFragment<FilterFragment>(R.id.filter_view)
 
     private val circularAnimator = CircularRevealAnimator(this)
     private val fadeAnimator = RotatedFadeAnimator(this)
@@ -70,6 +75,7 @@ class MainActivity : ToolbarActivity(), MainContract.View {
     private fun createOnQueryTextListener() = object : OnQueryTextListener() {
         override fun onQueryTextSubmit(query: String?): Boolean {
             loadItems()
+            if (filterView.isShown()) animateHideFilter()
             return super.onQueryTextSubmit(query)
         }
     }
@@ -110,7 +116,12 @@ class MainActivity : ToolbarActivity(), MainContract.View {
         startActivity(intent)
     }
 
-    override fun onBackPressed() = with(searchView) {
+    override fun onBackPressed() = when(filterView.isShown()) {
+        true -> animateHideFilter()
+        else -> onBackPressedWithSearchView()
+    }
+
+    private fun onBackPressedWithSearchView() = with(searchView) {
         when (isIconified) {
             true -> super.onBackPressed()
             false -> isIconified = true
@@ -118,36 +129,60 @@ class MainActivity : ToolbarActivity(), MainContract.View {
     }
 
     private fun setupFilterRelatedViews() {
-        btnFilterPrimary.setOnClickListener { animateFilterRelatedViews(true) }
-        btnFilterSecondary.setOnClickListener { animateFilterRelatedViews(false) }
+        btnFilterPrimary.setOnClickListener { animateShowFilter() }
+        btnFilterSecondary.setOnClickListener { onSecondaryClick() }
 
-        filterBackground.setOnClickListener { animateFilterRelatedViews(false) }
+        filterBackground.setOnClickListener { animateHideFilter() }
         filterBackground.visible = false
+
+        filterView.hide()
     }
 
-    private fun animateFilterRelatedViews(animateOut: Boolean) {
+    private fun onSecondaryClick() {
+        animateHideFilter()
+        hideKeyboard()
+        hideSearchQueryIfEmpty()
+        loadItems()
+    }
+
+    private fun hideSearchQueryIfEmpty() = with(searchView) {
+        if (isIconified or !TextUtils.isEmpty(query)) return
+
+        isIconified = true
+    }
+
+    private fun animateShowFilter() = animateFilterRelatedViews(true)
+
+    private fun animateHideFilter() = animateFilterRelatedViews(false)
+
+    private fun animateFilterRelatedViews(showFilter: Boolean) {
         if (fadeAnimator.hasStartedAnyFade()) return
 
-        btnFilterPrimary.fade(animateOut)
-        btnFilterSecondary.fade(!animateOut)
+        btnFilterPrimary.fade(showFilter)
+        btnFilterSecondary.fade(!showFilter)
 
-        animateFilterBackground(animateOut)
+        animateFilterBackground(showFilter)
+        animateFilterView(showFilter)
     }
 
-    private fun animateFilterBackground(animateOut: Boolean) =  when (animateOut) {
-        true -> circularAnimator.circuralReveal(filterBackground, btnFilterPrimary, coordinatorLayout)
-        false -> circularAnimator.circuralHide(filterBackground, btnFilterPrimary, coordinatorLayout)
+    private fun animateFilterView(showFilter: Boolean) = when(showFilter) {
+        true -> filterView.showAnimated()
+        false -> filterView.hideAnimated()
     }
 
-    private fun FloatingActionButton.fade(animateOut: Boolean) = when (animateOut) {
-        true -> fadeAnimator.startFadeOut(this, createFloatingButtonAnimationListener(this, animateOut))
-        false -> fadeAnimator.startFadeIn(this, createFloatingButtonAnimationListener(this, !animateOut))
+    private fun animateFilterBackground(showFilter: Boolean) =  when (showFilter) {
+        true -> circularAnimator.circularReveal(filterBackground, btnFilterPrimary, coordinatorLayout)
+        false -> circularAnimator.circularHide(filterBackground, btnFilterPrimary, coordinatorLayout)
     }
 
-    private fun createFloatingButtonAnimationListener(btn: View, animateIn: Boolean) = object : BaseAnimationListener() {
-        override fun onAnimationEnd(animation: Animation?) {
-            btn.visible = animateIn
-        }
+    private fun FloatingActionButton.fade(showFilter: Boolean) = when (showFilter) {
+        true -> fadeAnimator.startFadeOut(this)
+        false -> fadeAnimator.startFadeIn(this)
+    }
+
+    private fun hideKeyboard() = currentFocus?.let {
+        val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        manager.hideSoftInputFromWindow(it.windowToken, 0)
     }
 
 }

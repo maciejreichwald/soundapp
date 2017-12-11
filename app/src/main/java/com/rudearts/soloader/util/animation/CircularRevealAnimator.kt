@@ -18,35 +18,49 @@ class CircularRevealAnimator(base:Context) : ContextWrapper(base) {
         private val DEFAULT_RADIUS = 0f
     }
 
-    private var fadeIn: Animation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
-    private var fadeOut: Animation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+    private var fadeIn: Animation? = null
+    private var fadeOut: Animation? = null
 
-    fun circuralReveal(animatedView:View, startPointView:View, container:View) = when(isAtLeastLollipop()) {
-        true -> startLollipopCircularReveal(animatedView, startPointView, container)
-        false -> startDeprecatedCircularReveal(animatedView)
+    fun circularReveal(animatedView:View, startPointView:View, container:View) {
+        animatedView.visible = true
+
+        when (isAtLeastLollipop()) {
+            true -> startLollipopCircularReveal(animatedView, startPointView, container)
+            false -> startDeprecatedCircularReveal(animatedView)
+        }
     }
 
-    fun circuralHide(animatedView:View, startPointView:View, container:View) = when(isAtLeastLollipop()) {
+    fun circularHide(animatedView:View, startPointView:View, container:View) = when(isAtLeastLollipop()) {
         true -> startLollipopCircularHide(animatedView, startPointView, container)
-        false -> startDeprecatedCircullarHide(animatedView)
+        false -> startDeprecatedCircularHide(animatedView)
     }
 
     private fun isAtLeastLollipop() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
 
+    /** Normally, there are libs, that allow you to do circular reveal on pre-lollipop versions
+     * but I wanted to avoid using too much external libs here. Supporting that animation just for
+     * couple old platforms is not the main goal here either.
+     */
     private fun startDeprecatedCircularReveal(animatedView: View) {
+        fadeIn = initAnimation(fadeIn, R.anim.fade_in)
         animatedView.startAnimation(fadeIn)
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun startLollipopCircularReveal(animatedView:View, startPointView:View, container:View) {
         val (x,y) = calculateStartPoint(startPointView)
-        val animator = ViewAnimationUtils.createCircularReveal(animatedView, x, y, DEFAULT_RADIUS, container.height.toFloat())
-        animator.start()
+        ViewAnimationUtils.createCircularReveal(animatedView, x, y, DEFAULT_RADIUS, container.height.toFloat()).apply {
+            start()
+        }
     }
 
-    private fun startDeprecatedCircullarHide(animatedView:View) {
+    /** Same reason for this "simplified" solution as for startDeprecatedCircularReveal() function
+     */
+    private fun startDeprecatedCircularHide(animatedView:View) {
+        fadeOut = initAnimation(fadeOut, R.anim.fade_out)
+
         animatedView.startAnimation(fadeOut)
-        fadeOut.setAnimationListener(createFadeOutListener(animatedView))
+        fadeOut?.setAnimationListener(createFadeOutListener(animatedView))
     }
 
     private fun createFadeOutListener(animatedView: View) = object : BaseAnimationListener() {
@@ -55,21 +69,27 @@ class CircularRevealAnimator(base:Context) : ContextWrapper(base) {
         }
     }
 
+    private fun initAnimation(animation: Animation?, animationResourceId:Int) = when(animation) {
+        null -> AnimationUtils.loadAnimation(this, animationResourceId)
+        else -> animation
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun startLollipopCircularHide(animatedView:View, startPointView:View, container:View) {
         val (x,y) = calculateStartPoint(startPointView)
-        val animator = ViewAnimationUtils.createCircularReveal(animatedView, x, y, container.height.toFloat(), DEFAULT_RADIUS)
-        animator.addListener(createCircuralCollapseListener(animatedView))
-        animator.start()
+        ViewAnimationUtils.createCircularReveal(animatedView, x, y, container.height.toFloat(), DEFAULT_RADIUS).apply {
+            addListener(createCircularHideListener(animatedView))
+            start()
+        }
     }
 
-    private fun createCircuralCollapseListener(view:View) = object: BaseAnimatorListener() {
+    private fun createCircularHideListener(view:View) = object: BaseAnimatorListener() {
         override fun onAnimationEnd(p0: Animator?) {
             view.visible = false
         }
     }
 
-    private fun calculateStartPoint(startPointView: View) = Pair<Int, Int>(
+    private fun calculateStartPoint(startPointView: View) = Pair(
             calculateStartParameter(startPointView.x, startPointView.width),
             calculateStartParameter(startPointView.y, startPointView.height))
 
