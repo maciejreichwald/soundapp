@@ -5,7 +5,7 @@
     <data>
         <variable
             name="titlable"
-            type="com.rudearts.soloader.model.filter.Titlable"/>
+            type="com.rudearts.soundapp.model.filter.Titlable"/>
     </data>
 
     <RelativeLayout

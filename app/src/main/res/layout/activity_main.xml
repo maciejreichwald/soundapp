@@ -36,7 +36,7 @@
         style="@style/FilterBackground"/>
 
     <fragment
-        android:name="com.rudearts.soloader.ui.main.filter.FilterFragment"
+        android:name="com.rudearts.soundapp.ui.main.filter.FilterFragment"
         android:id="@+id/filter_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
