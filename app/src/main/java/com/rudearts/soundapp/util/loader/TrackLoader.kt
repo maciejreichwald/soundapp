@@ -5,9 +5,6 @@ import android.content.ContextWrapper
 import android.text.TextUtils
 import com.google.gson.GsonBuilder
 import com.rudearts.soundapp.SongApplication
-import com.rudearts.soundapp.api.ExternalMapper
-import com.rudearts.soundapp.api.RestController
-import com.rudearts.soundapp.controller.AssetController
 import com.rudearts.soundapp.di.BasicModule
 import com.rudearts.soundapp.model.external.TrackAsset
 import com.rudearts.soundapp.model.external.TrackNumber

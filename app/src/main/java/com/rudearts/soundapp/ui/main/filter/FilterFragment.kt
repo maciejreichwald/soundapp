@@ -118,7 +118,8 @@ class FilterFragment : Fragment(), FilterContract.View, Injects<BasicModule> {
             getDropSelectedItem(dropSource, SourceType.BOTH),
             getDropSelectedItem(dropSort, SortType.SONG))
 
-    private fun <T>getDropSelectedItem(drop:Spinner?, default:T) = drop?.selectedItem as T ?: default
+
+    private fun <T>getDropSelectedItem(drop:Spinner?, default:T) = drop?.let { it.selectedItem as T } ?: default
 
     override fun hasFilterChanged(query:String) = presenter.checkFilterChanged(getFilter(query))
 }

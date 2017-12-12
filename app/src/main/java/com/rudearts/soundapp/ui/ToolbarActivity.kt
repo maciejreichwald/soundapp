@@ -41,7 +41,7 @@ abstract class ToolbarActivity : AppCompatActivity() {
     private fun includeSubview() =
             View.inflate(this, provideSubContentViewId(), coordinatorLayout)
 
-    protected fun showSnackMessage(message: String) = coordinatorLayout?.let {
+    protected fun showSnackMessage(message: String) = coordinatorLayout.let {
         Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show()
     }
 
@@ -51,7 +51,7 @@ abstract class ToolbarActivity : AppCompatActivity() {
 
     private fun setupActionBar() {
         setSupportActionBar(toolbar)
-        toolbar?.setTitleTextColor(ContextCompat.getColor(this, R.color.primary))
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.primary))
     }
 
     abstract fun provideSubContentViewId(): Int

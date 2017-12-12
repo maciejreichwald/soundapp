@@ -28,8 +28,3 @@ fun <T : View> View.bind(@IdRes idRes: Int): Lazy<T> {
 
 private fun <T> unsafeLazy(initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)
 
-fun View.onClick(onClick:() -> Unit) {
-    isClickable = true
-
-    setOnClickListener({onClick})
-}
