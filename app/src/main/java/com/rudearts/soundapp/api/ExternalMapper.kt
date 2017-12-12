@@ -14,7 +14,7 @@ import space.traversal.kapsule.required
 
 class ExternalMapper(base:Context) : ContextWrapper(base), Injects<BasicModule> {
 
-    protected val dateUtil by required { dateUtil }
+    internal val dateUtil by required { dateUtil }
 
     init {
         inject(SongApplication.module(this))
@@ -28,6 +28,6 @@ class ExternalMapper(base:Context) : ContextWrapper(base), Injects<BasicModule> 
         Track(text2unknown(name), text2unknown(artist), dateUtil.year2date(releaseDate?.value))
     }
 
-    private fun text2unknown(text:String?) = text ?: getString(R.string.unknown)
+    internal fun text2unknown(text:String?) = text ?: getString(R.string.unknown)
 
 }

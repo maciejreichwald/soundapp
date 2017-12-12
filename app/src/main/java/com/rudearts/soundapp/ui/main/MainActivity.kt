@@ -39,8 +39,8 @@ class MainActivity : ToolbarActivity(), MainContract.View, Injects<BasicModule> 
     private val filterBackground: View by bind(R.id.filter_background)
     private val filterView:FilterContract.View by bindFragment<FilterFragment>(R.id.filter_view)
 
-    private val circularAnimator by required { circularAnimator }
-    private val fadeAnimator by required { fadeAnimator }
+    internal val circularAnimator by required { circularAnimator }
+    internal val fadeAnimator by required { fadeAnimator }
 
     private lateinit var presenter: MainContract.Presenter
     private lateinit var adapter: TrackAdapter

@@ -2,6 +2,7 @@ package com.rudearts.soundapp.di
 
 import android.content.Context
 import android.content.ContextWrapper
+import com.nhaarman.mockitokotlin2.mock
 import com.rudearts.soundapp.api.ExternalMapper
 import com.rudearts.soundapp.api.RestController
 import com.rudearts.soundapp.controller.AssetController
@@ -13,20 +14,20 @@ import com.rudearts.soundapp.util.animation.RotatedFadeAnimator
 import com.rudearts.soundapp.util.loader.AssetLoader
 import com.rudearts.soundapp.util.loader.TrackLoader
 
-class MainModule(base:Context) : ContextWrapper(base), BasicModule {
+class TestModule(base:Context) : ContextWrapper(base), BasicModule {
 
-    override val restController get() = RestController.instance
-    override val mapper get() = ExternalMapper(this)
+    override val restController get() = mock<RestController> {}
+    override val mapper get() = mock<ExternalMapper>{}
 
-    override val circularAnimator get() = CircularRevealAnimator(this)
-    override val fadeAnimator get() = RotatedFadeAnimator(this)
+    override val circularAnimator get() = mock<CircularRevealAnimator> {}
+    override val fadeAnimator get() = mock<RotatedFadeAnimator> {}
 
-    override val dateUtil get() = DateUtil.instance
+    override val dateUtil get() = mock<DateUtil> {}
 
-    override val assetLoader get() = AssetLoader(this)
-    override val trackLoader get() = TrackLoader(this)
-    override val assetController get() = AssetController.instance
+    override val assetLoader get() = mock<AssetLoader> {}
+    override val trackLoader get() = mock<TrackLoader> {}
+    override val assetController get() = mock<AssetController> {}
 
     override val filterPresenter: FilterContract.Presenter
-        get() = FilterPresenter()
+        get() = mock<FilterPresenter> {}
 }

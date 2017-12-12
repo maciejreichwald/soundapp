@@ -8,21 +8,23 @@ import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 
-class SongApplication : Application(), Injects<BasicModule> {
-
-    private val module = MainModule(this)
+open class SongApplication : Application(), Injects<BasicModule> {
 
     companion object {
         fun module(context:Context) = (context.applicationContext as SongApplication).module
     }
 
-    private val restController by required { restController }
+    private val module = createModule()
+
+    internal val restController by required { restController }
 
     override fun onCreate() {
         super.onCreate()
         injection()
         setup()
     }
+
+    open protected fun createModule():BasicModule = MainModule(this)
 
     private fun injection() {
         inject(module)

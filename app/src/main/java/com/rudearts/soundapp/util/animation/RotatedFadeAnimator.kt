@@ -40,7 +40,7 @@ class RotatedFadeAnimator(base:Context, var rotatable:Boolean = true) : ContextW
     }
 
     private fun createFadeListener(view: View, visible: Boolean) = object : BaseAnimationListener() {
-        override fun onAnimationEnd(animation: Animation?) {
+        override fun onAnimationEnd(p0: Animation?) {
             view.visible = visible
         }
     }

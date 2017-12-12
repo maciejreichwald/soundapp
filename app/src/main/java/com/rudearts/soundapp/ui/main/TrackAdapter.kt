@@ -24,7 +24,7 @@ class TrackAdapter(context:Context, items: List<Track>, private val listener: (T
         val MIN_YEAR = 500L
     }
 
-    private val dateUtil by required { dateUtil }
+    internal val dateUtil by required { dateUtil }
 
     private val inflater = LayoutInflater.from(context)
     private var items = items

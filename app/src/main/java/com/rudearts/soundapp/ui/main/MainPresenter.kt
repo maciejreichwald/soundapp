@@ -15,7 +15,7 @@ import space.traversal.kapsule.required
 
 class MainPresenter(base:Context, val view:MainContract.View) : ContextWrapper(base), MainContract.Presenter, Injects<BasicModule> {
 
-    private val loader by required { trackLoader }
+    internal val loader by required { trackLoader }
 
     init {
         inject(SongApplication.module(this))

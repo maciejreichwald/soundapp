@@ -8,7 +8,7 @@ class AssetController private constructor() {
 
     companion object {
         val instance: AssetController by lazy { Holder.INSTANCE }
-        private val TRACKS_ARE_LOADED = "TrackAreLoaded"
+        private val TRACKS_ARE_LOADED = "TracksAreLoaded"
     }
 
     var loadedTracks:List<Track>? = null

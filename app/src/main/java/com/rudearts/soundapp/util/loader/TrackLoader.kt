@@ -32,10 +32,10 @@ class TrackLoader(base:Context) : ContextWrapper(base), Injects<BasicModule> {
         private val ASSET_PATH = "songs.json"
     }
 
-    private val assetLoader by required { assetLoader }
-    private val assetController by required { assetController }
-    private val restController by required { restController }
-    private val mapper by required { mapper }
+    internal val assetLoader by required { assetLoader }
+    internal val assetController by required { assetController }
+    internal val restController by required { restController }
+    internal val mapper by required { mapper }
 
     init {
         inject(SongApplication.module(this))
@@ -93,12 +93,12 @@ class TrackLoader(base:Context) : ContextWrapper(base), Injects<BasicModule> {
         return itemsExternal.map { mapper.track2local(it) }
     }
 
-    private fun createSearchRequest(filter: TrackFilter) : Single<Response<SearchResponse>> {
+    internal fun createSearchRequest(filter: TrackFilter) : Single<Response<SearchResponse>> {
         val query = emptyQuery2Default(filter.query)
         return createSearchRequestBySource(query, filter)
     }
 
-    private fun createAssetRequest(source: SourceType) = when(source) {
+    internal fun createAssetRequest(source: SourceType) = when(source) {
         SourceType.ASSET, SourceType.BOTH -> createAssetRequestOrLoadBackup()
         SourceType.REST -> Single.create { it.onSuccess("") }
     }

@@ -1,6 +1,7 @@
 package com.rudearts.soundapp.ui.main.filter
 
 
+import android.content.Context
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -22,8 +23,8 @@ import space.traversal.kapsule.required
 
 class FilterFragment : Fragment(), FilterContract.View, Injects<BasicModule> {
 
-    private val presenter:FilterContract.Presenter = FilterPresenter()
-    private val fadeAnimator by required { fadeAnimator }
+    internal val presenter by required { filterPresenter }
+    internal val fadeAnimator by required { fadeAnimator }
 
     private var inflater: LayoutInflater? = null
 
@@ -67,20 +68,22 @@ class FilterFragment : Fragment(), FilterContract.View, Injects<BasicModule> {
     }
 
     private fun setupContextVariables() = context?.let {
-        inject(SongApplication.module(it))
+        performInject(it)
 
         inflater = LayoutInflater.from(it)
         container = view?.findViewById(R.id.container)
         fadeAnimator.rotatable = false
     }
 
+    internal fun performInject(context: Context) = inject(SongApplication.module(context))
+
     override fun activatedAnimated(query:String) {
         presenter.storeFilter(getFilter(query))
-        view?.let { fadeAnimator?.startFadeIn(it) }
+        view?.let { fadeAnimator.startFadeIn(it) }
     }
 
     override fun hideAnimated() {
-        view?.let { fadeAnimator?.startFadeOut(it) }
+        view?.let { fadeAnimator.startFadeOut(it) }
     }
 
     override fun restoreFilter() {
@@ -93,6 +96,11 @@ class FilterFragment : Fragment(), FilterContract.View, Injects<BasicModule> {
         restoreSpinnerSelection(dropSort, filter.sort)
     }
 
+    /**
+     * SuppressWarnings didn't work here in any given combination. This warning is nothing to worry,
+     * but getting rid of it would cause too many unnecessary code changes. I'll let it live till
+     * the next time...
+     */
     private fun <T>restoreSpinnerSelection(spinner: Spinner?, value: T) = spinner?.let {
         val adapter = spinner.adapter as ArrayAdapter<T>
         spinner.setSelection(adapter.getPosition(value))
@@ -106,9 +114,11 @@ class FilterFragment : Fragment(), FilterContract.View, Injects<BasicModule> {
 
     override fun getFilter(query: String): TrackFilter = TrackFilter(
             query,
-            dropSearchType?.selectedItem as SearchType,
-            dropSource?.selectedItem as SourceType,
-            dropSort?.selectedItem as SortType)
+            getDropSelectedItem(dropSearchType, SearchType.SONG),
+            getDropSelectedItem(dropSource, SourceType.BOTH),
+            getDropSelectedItem(dropSort, SortType.SONG))
+
+    private fun <T>getDropSelectedItem(drop:Spinner?, default:T) = drop?.selectedItem as T ?: default
 
     override fun hasFilterChanged(query:String) = presenter.checkFilterChanged(getFilter(query))
 }
