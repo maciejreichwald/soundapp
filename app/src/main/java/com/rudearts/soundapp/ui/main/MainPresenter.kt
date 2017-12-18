@@ -1,29 +1,23 @@
 package com.rudearts.soundapp.ui.main
 
-import android.content.Context
-import android.content.ContextWrapper
-import com.rudearts.soundapp.SongApplication
-import com.rudearts.soundapp.di.BasicModule
+import android.os.Bundle
+import com.rudearts.soundapp.domain.LoadTracksUseCase
+import com.rudearts.soundapp.domain.TrackLoadable
 import com.rudearts.soundapp.model.filter.TrackFilter
 import com.rudearts.soundapp.model.local.Track
-import com.rudearts.soundapp.util.loader.TrackLoader
+import com.rudearts.soundapp.ui.details.DetailsActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import space.traversal.kapsule.Injects
-import space.traversal.kapsule.inject
-import space.traversal.kapsule.required
+import javax.inject.Inject
 
-class MainPresenter(base:Context, val view:MainContract.View) : ContextWrapper(base), MainContract.Presenter, Injects<BasicModule> {
+class MainPresenter @Inject constructor(
+        internal val view:MainContract.View,
+        internal val loader:TrackLoadable.UseCase) : MainContract.Presenter {
 
-    internal val loader by required { trackLoader }
-
-    init {
-        inject(SongApplication.module(this))
-    }
-
-    override fun loadTracks(filter:TrackFilter) {
+    override fun loadTracks() {
         view.updateLoadingState(true)
 
+        val filter = retrieveFilter()
         loader.loadTracks(filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -32,20 +26,44 @@ class MainPresenter(base:Context, val view:MainContract.View) : ContextWrapper(b
                         {onError(it)})
     }
 
-    private fun onError(error: Throwable) {
+    override fun onFilterClick() {
+        view.hideKeyboard()
+        loadTracks()
+    }
+
+    override fun onQuestionClick(track: Track) {
+        view.startDetailActivity(createQuestionIntent(track))
+    }
+
+    internal fun createQuestionIntent(track: Track) = Bundle().apply {
+        putString(DetailsActivity.TITLE, track.name)
+        putString(DetailsActivity.LINK, track.trackPreviewUrl)
+    }
+
+    internal fun retrieveFilter():TrackFilter {
+        val sourceType = view.retrieveSelectedSourceType()
+        val query = view.retrieveSearchQuery()
+        return TrackFilter(query, sourceType)
+    }
+
+    internal fun onError(error: Throwable) {
         error.printStackTrace()
 
         view.updateLoadingState(false)
         handleMessagesError(error.toString())
     }
 
-    private fun onItemsLoaded(items:List<Track>) = with(view) {
-        updateLoadingState(false)
-        updateTracks(items)
+    internal fun onItemsLoaded(items:List<Track>) {
+        with(view) {
+            updateLoadingState(false)
+            updateTracks(items)
+        }
     }
 
-    private fun handleMessagesError(message: String) = with(view) {
-        showMessage(message)
-        updateTracks(ArrayList())
+    internal fun handleMessagesError(message: String) {
+        with(view) {
+            showMessage(message)
+            updateTracks(emptyList())
+        }
     }
 }

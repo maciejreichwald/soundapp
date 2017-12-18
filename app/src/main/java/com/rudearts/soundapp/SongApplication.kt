@@ -1,36 +1,26 @@
 package com.rudearts.soundapp
 
 import android.app.Application
-import android.content.Context
-import com.rudearts.soundapp.di.BasicModule
-import com.rudearts.soundapp.di.MainModule
-import space.traversal.kapsule.Injects
-import space.traversal.kapsule.inject
-import space.traversal.kapsule.required
+import com.rudearts.soundapp.di.app.AppComponent
+import com.rudearts.soundapp.di.app.DaggerAppComponent
+import com.rudearts.soundapp.di.app.DomainModule
+import com.rudearts.soundapp.di.app.ExternalModule
 
-open class SongApplication : Application(), Injects<BasicModule> {
+class SongApplication : Application() {
 
-    companion object {
-        fun module(context:Context) = (context.applicationContext as SongApplication).module
+    companion object{
+        lateinit var appComponent: AppComponent
     }
-
-    private val module = createModule()
-
-    internal val restController by required { restController }
 
     override fun onCreate() {
         super.onCreate()
-        injection()
-        setup()
+        createComponent()
     }
 
-    open protected fun createModule():BasicModule = MainModule(this)
-
-    private fun injection() {
-        inject(module)
-    }
-
-    private fun setup() {
-        restController.setup()
+    internal fun createComponent() {
+        appComponent =  DaggerAppComponent.builder()
+                .domainModule(DomainModule())
+                .externalModule(ExternalModule(this))
+                .build()
     }
 }

@@ -25,12 +25,8 @@ abstract class ToolbarActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_default)
-        setupActionBar()
-    }
-
-    override fun setContentView(@LayoutRes layoutResID: Int) {
-        super.setContentView(layoutResID)
         includeSubview()
+        setupActionBar()
     }
 
     override fun setTitle(title: CharSequence) {
@@ -38,8 +34,9 @@ abstract class ToolbarActivity : AppCompatActivity() {
         toolbarTitle.text = title
     }
 
-    private fun includeSubview() =
-            View.inflate(this, provideSubContentViewId(), coordinatorLayout)
+    private fun includeSubview() {
+        View.inflate(this, provideSubContentViewId(), coordinatorLayout)
+    }
 
     protected fun showSnackMessage(message: String) = coordinatorLayout.let {
         Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show()

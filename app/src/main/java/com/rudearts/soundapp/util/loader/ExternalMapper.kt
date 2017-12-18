@@ -1,24 +1,15 @@
-package com.rudearts.soundapp.api
+package com.rudearts.soundapp.util.loader
 
 import android.content.Context
 import android.content.ContextWrapper
 import com.rudearts.soundapp.R
-import com.rudearts.soundapp.SongApplication
-import com.rudearts.soundapp.di.BasicModule
 import com.rudearts.soundapp.model.external.TrackAsset
 import com.rudearts.soundapp.model.external.TrackRest
 import com.rudearts.soundapp.model.local.Track
-import space.traversal.kapsule.Injects
-import space.traversal.kapsule.inject
-import space.traversal.kapsule.required
+import com.rudearts.soundapp.util.DateUtil
+import javax.inject.Inject
 
-class ExternalMapper(base:Context) : ContextWrapper(base), Injects<BasicModule> {
-
-    internal val dateUtil by required { dateUtil }
-
-    init {
-        inject(SongApplication.module(this))
-    }
+class ExternalMapper @Inject constructor(base:Context, internal val dateUtil: DateUtil) : ContextWrapper(base) {
 
     fun track2local(track:TrackRest) = with(track) {
         Track(text2unknown(trackName), text2unknown(artistName), dateUtil.string2date(releaseDate), artworkUrl60, artworkUrl100, trackViewUrl, previewUrl)

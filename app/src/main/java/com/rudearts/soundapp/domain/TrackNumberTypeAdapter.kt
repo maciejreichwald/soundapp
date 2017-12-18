@@ -1,4 +1,4 @@
-package com.rudearts.soundapp.util.loader
+package com.rudearts.soundapp.domain
 
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer

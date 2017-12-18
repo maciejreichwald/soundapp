@@ -6,19 +6,22 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-class RestController private constructor() {
-
-    private object Holder { val INSTANCE = RestController() }
+class RestController {
 
     companion object {
         val END_POINT = "https://itunes.apple.com"
-        val instance: RestController by lazy { Holder.INSTANCE }
     }
 
-    lateinit var restApi: RestAPI
-        private set
+    /**
+     * It is lateinit only because compilator is not allowing it...
+     */
+    internal lateinit var restApi: RestAPI
 
-    fun setup() {
+    init {
+        setup()
+    }
+
+    internal fun setup() {
         val httpLoggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
@@ -36,4 +39,6 @@ class RestController private constructor() {
 
         restApi = retrofit.create(RestAPI::class.java)
     }
+
+    fun provideRestApi() = restApi
 }

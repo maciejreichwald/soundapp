@@ -13,7 +13,7 @@
 
     <string name="source_rest">iTunes</string>
     <string name="source_asset">Embed</string>
-    <string name="source_both">iTunes &amp; Embed</string>
+    <string name="source_both">ALL</string>
 
     <string name="song">Song</string>
     <string name="artist">Artist</string>

@@ -1,4 +1,4 @@
-package com.rudearts.soundapp.ui.main
+package com.rudearts.soundapp.ui.main.adapters
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -6,33 +6,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.rudearts.soundapp.R
-import com.rudearts.soundapp.SongApplication
-import com.rudearts.soundapp.di.BasicModule
+import com.rudearts.soundapp.di.main.MainComponent
 import com.rudearts.soundapp.extentions.loadUrlThumb
 import com.rudearts.soundapp.model.local.Track
 import com.rudearts.soundapp.util.DateUtil
 import kotlinx.android.synthetic.main.song_item.view.*
-import space.traversal.kapsule.Injects
-import space.traversal.kapsule.inject
-import space.traversal.kapsule.required
 import java.util.*
+import javax.inject.Inject
 
-class TrackAdapter(context:Context, items: List<Track>, private val listener: (Track) ->Unit) : RecyclerView.Adapter<TrackAdapter.ViewHolder>(), Injects<BasicModule> {
+class TrackAdapter(context:Context, component: MainComponent, private val listener: (Track) ->Unit) : RecyclerView.Adapter<TrackAdapter.ViewHolder>() {
 
     companion object {
         val DEFAULT_IMAGE_SIZE = 150
         val MIN_YEAR = 500L
     }
 
-    internal val dateUtil by required { dateUtil }
+    @Inject internal lateinit var dateUtil:DateUtil
 
-    private val inflater = LayoutInflater.from(context)
-    private var items = items
+    internal val inflater = LayoutInflater.from(context)
+    internal var items = emptyList<Track>()
 
-    private val unknownText = context.getString(R.string.none)
+    internal val unknownText = context.getString(R.string.none)
 
     init {
-        inject(SongApplication.module(context))
+        component.inject(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -48,12 +45,12 @@ class TrackAdapter(context:Context, items: List<Track>, private val listener: (T
         notifyDataSetChanged()
     }
 
-    private fun generateDate(releaseDate: Date) = when(isReleaseDateStrange(releaseDate.time)) {
+    internal fun generateDate(releaseDate: Date) = when(isReleaseDateStrange(releaseDate.time)) {
         true -> unknownText
         false -> dateUtil.date2year(releaseDate)
     }
 
-    private fun isReleaseDateStrange(time: Long) = time < MIN_YEAR
+    internal fun isReleaseDateStrange(time: Long) = time < MIN_YEAR
 
     inner class ViewHolder(itemView:View) : RecyclerView.ViewHolder(itemView) {
         fun bind(track:Track, listener: (Track)->Unit) = with(itemView) {

@@ -3,18 +3,14 @@ package com.rudearts.soundapp.util
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DateUtil private constructor() {
-
-    private object Holder { val INSTANCE = DateUtil() }
-
+class DateUtil {
     companion object {
         val TACK_DATE_FORMAT = "yyyy-MM-DD'T'hh:mm:ss'Z'"
         val YEAR_FORMAT = "yyyy"
-        val instance: DateUtil by lazy { Holder.INSTANCE }
     }
 
-    private var trackFormat = SimpleDateFormat(TACK_DATE_FORMAT)
-    private var yearFormat = SimpleDateFormat(YEAR_FORMAT)
+    internal var trackFormat = SimpleDateFormat(TACK_DATE_FORMAT)
+    internal var yearFormat = SimpleDateFormat(YEAR_FORMAT)
 
     fun string2date(textDate:String?) = textDate?.let { trackFormat.parse(it) } ?: Date(0)
 
