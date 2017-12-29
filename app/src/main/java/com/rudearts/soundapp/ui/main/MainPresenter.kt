@@ -1,8 +1,8 @@
 package com.rudearts.soundapp.ui.main
 
 import android.os.Bundle
-import com.rudearts.soundapp.domain.LoadTracksUseCase
 import com.rudearts.soundapp.domain.TrackLoadable
+import com.rudearts.soundapp.model.LoadingState
 import com.rudearts.soundapp.model.filter.TrackFilter
 import com.rudearts.soundapp.model.local.Track
 import com.rudearts.soundapp.ui.details.DetailsActivity
@@ -15,7 +15,7 @@ class MainPresenter @Inject constructor(
         internal val loader:TrackLoadable.UseCase) : MainContract.Presenter {
 
     override fun loadTracks() {
-        view.updateLoadingState(true)
+        view.updateLoadingState(LoadingState.LOADING)
 
         val filter = retrieveFilter()
         loader.loadTracks(filter)
@@ -49,21 +49,25 @@ class MainPresenter @Inject constructor(
     internal fun onError(error: Throwable) {
         error.printStackTrace()
 
-        view.updateLoadingState(false)
+        updateTracksAndLoadingState(emptyList())
         handleMessagesError(error.toString())
     }
 
     internal fun onItemsLoaded(items:List<Track>) {
-        with(view) {
-            updateLoadingState(false)
-            updateTracks(items)
-        }
+        updateTracksAndLoadingState(items)
     }
 
     internal fun handleMessagesError(message: String) {
-        with(view) {
-            showMessage(message)
-            updateTracks(emptyList())
+        view.showMessage(message)
+        updateTracksAndLoadingState(emptyList())
+    }
+
+    internal fun updateTracksAndLoadingState(items:List<Track>) {
+        view.updateTracks(items)
+
+        when(items.isEmpty()) {
+            true -> view.updateLoadingState(LoadingState.NO_RESULTS)
+            false -> view.updateLoadingState(LoadingState.SHOW_RESULTS)
         }
     }
 }

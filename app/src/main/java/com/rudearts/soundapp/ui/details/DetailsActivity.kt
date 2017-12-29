@@ -8,16 +8,23 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.rudearts.soundapp.R
+import com.rudearts.soundapp.di.details.DaggerDetailsComponent
+import com.rudearts.soundapp.di.details.DetailsComponent
+import com.rudearts.soundapp.di.details.DetailsModule
 import com.rudearts.soundapp.extentions.bind
 import com.rudearts.soundapp.extentions.visible
+import com.rudearts.soundapp.model.LoadingState
 import com.rudearts.soundapp.ui.ToolbarActivity
+import javax.inject.Inject
 
-class DetailsActivity : ToolbarActivity() {
+class DetailsActivity : ToolbarActivity(), DetailsContract.View {
 
     companion object {
         val TITLE = "DetailsTitle"
         val LINK = "DetailsLink"
     }
+
+    @Inject lateinit var presenter:DetailsContract.Presenter
 
     private val emptyView:View by bind(R.id.empty_view)
     private val progressBar:View by bind(R.id.progress_bar)
@@ -28,48 +35,36 @@ class DetailsActivity : ToolbarActivity() {
         setup()
     }
 
-    private fun setup() {
+    internal fun setup() {
+        inject()
         setupTitle()
-        setupContent()
+
+        presenter.setupContent(intent)
     }
 
-    private fun setupContent() {
-        val link = intent.getStringExtra(LINK)
-
-        when(TextUtils.isEmpty(link)) {
-            true -> onInvalidUrl()
-            false -> {
-                emptyView.visible = false
-                setupWebView(link)
-            }
+    internal fun inject() {
+        createComponent().apply {
+            this.inject(this@DetailsActivity)
         }
     }
 
-    private fun onInvalidUrl() {
-        progressBar.visible = false
-        webView.visible = false
-        emptyView.visible = true
+    internal fun createComponent() = DaggerDetailsComponent.builder()
+            .detailsModule(DetailsModule(this))
+            .build()
+
+    override fun updateLoadingState(state:LoadingState) {
+        progressBar.visible = state == LoadingState.LOADING
+        webView.visible = state == LoadingState.SHOW_RESULTS
+        emptyView.visible = state == LoadingState.NO_RESULTS
     }
 
-    private fun setupWebView(link:String) = with (webView) {
-            webViewClient = createWebViewClient()
+    override fun setupWebView(client: WebViewClient, link:String) = with (webView) {
+            webViewClient = client
             loadUrl(link)
     }
 
-    private fun createWebViewClient() = object : WebViewClient() {
-        override fun onPageFinished(view: WebView?, url: String?) {
-            progressBar.visible = false
-            super.onPageFinished(view, url)
-        }
-
-        override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
-            onInvalidUrl()
-            super.onReceivedError(view, request, error)
-        }
-    }
-
     private fun setupTitle() {
-        setTitle(intent.getStringExtra(TITLE))
+        title = intent.getStringExtra(TITLE)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setDisplayShowHomeEnabled(true)

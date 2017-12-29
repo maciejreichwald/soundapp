@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.rudearts.soundapp.R
-import com.rudearts.soundapp.di.main.MainComponent
 import com.rudearts.soundapp.extentions.loadUrlThumb
 import com.rudearts.soundapp.model.local.Track
 import com.rudearts.soundapp.util.DateUtil
@@ -14,23 +13,20 @@ import kotlinx.android.synthetic.main.song_item.view.*
 import java.util.*
 import javax.inject.Inject
 
-class TrackAdapter(context:Context, component: MainComponent, private val listener: (Track) ->Unit) : RecyclerView.Adapter<TrackAdapter.ViewHolder>() {
+class TrackAdapter @Inject constructor(context:Context, internal val dateUtil:DateUtil)
+    : RecyclerView.Adapter<TrackAdapter.ViewHolder>() {
 
     companion object {
         val DEFAULT_IMAGE_SIZE = 150
         val MIN_YEAR = 500L
     }
 
-    @Inject internal lateinit var dateUtil:DateUtil
-
     internal val inflater = LayoutInflater.from(context)
     internal var items = emptyList<Track>()
 
     internal val unknownText = context.getString(R.string.none)
 
-    init {
-        component.inject(this)
-    }
+    internal var listener: ((Track) ->Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
              ViewHolder(inflater.inflate(R.layout.song_item, parent, false))
@@ -53,7 +49,7 @@ class TrackAdapter(context:Context, component: MainComponent, private val listen
     internal fun isReleaseDateStrange(time: Long) = time < MIN_YEAR
 
     inner class ViewHolder(itemView:View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(track:Track, listener: (Track)->Unit) = with(itemView) {
+        fun bind(track:Track, listener: ((Track)->Unit)?) = with(itemView) {
             avatar.setImageResource(R.drawable.song_unknown)
             track.smallIcon?.let {
                 avatar.loadUrlThumb(DEFAULT_IMAGE_SIZE, R.drawable.song_unknown, it)
@@ -61,7 +57,7 @@ class TrackAdapter(context:Context, component: MainComponent, private val listen
             title.text = track.name
             user.text = track.artist
             date.text = generateDate(track.releaseDate)
-            setOnClickListener { listener(track) }
+            setOnClickListener { listener?.let { it(track)} }
         }
     }
 }

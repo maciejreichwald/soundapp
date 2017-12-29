@@ -16,6 +16,7 @@ import com.rudearts.soundapp.di.main.MainComponent
 import com.rudearts.soundapp.di.main.MainModule
 import com.rudearts.soundapp.extentions.bind
 import com.rudearts.soundapp.extentions.visible
+import com.rudearts.soundapp.model.LoadingState
 import com.rudearts.soundapp.model.filter.SourceType
 import com.rudearts.soundapp.model.local.Track
 import com.rudearts.soundapp.ui.ToolbarActivity
@@ -24,20 +25,20 @@ import com.rudearts.soundapp.ui.main.adapters.FilterAdapter
 import com.rudearts.soundapp.ui.main.adapters.TrackAdapter
 import javax.inject.Inject
 
-
-class MainActivity : ToolbarActivity(), MainContract.View {
+/**
+ * Yes, it is open, you can see in MainActivityTest bottom comment why
+ */
+open class MainActivity : ToolbarActivity(), MainContract.View {
 
     @Inject internal lateinit var presenter: MainContract.Presenter
+    @Inject internal lateinit var trackAdapter: TrackAdapter
+    @Inject internal lateinit var filterAdapter: FilterAdapter
 
     internal val refreshLayout: SwipeRefreshLayout by bind(R.id.swipe_container)
     internal val progressBar: View by bind(R.id.progress_bar)
     internal val listItems: RecyclerView by bind(R.id.items_list)
     internal val emptyView: View by bind(R.id.empty_view)
     internal val filterContainer: ViewGroup by bind(R.id.source_filters)
-
-    internal lateinit var mainComponent: MainComponent
-    internal lateinit var trackAdapter: TrackAdapter
-    internal lateinit var filterAdapater: FilterAdapter
 
     override fun provideSubContentViewId() = R.layout.activity_main
 
@@ -56,17 +57,18 @@ class MainActivity : ToolbarActivity(), MainContract.View {
     }
 
     internal fun inject() {
-        mainComponent = createMainComponent()
-        mainComponent.inject(this)
+        createComponent().apply {
+            this.inject(this@MainActivity)
+        }
     }
 
-    internal fun createMainComponent() = DaggerMainComponent.builder()
+    internal fun createComponent() = DaggerMainComponent.builder()
             .appComponent(SongApplication.appComponent)
-            .mainModule(MainModule(this))
+            .mainModule(MainModule(this, this))
             .build()
 
     internal fun setupTitle() {
-        title = getString(R.string.so_loader)
+        title = getString(R.string.sound_app)
     }
 
     internal fun setupViews() {
@@ -77,20 +79,24 @@ class MainActivity : ToolbarActivity(), MainContract.View {
     }
 
     internal fun setupList() {
-        trackAdapter = TrackAdapter(this, mainComponent, { presenter.onQuestionClick(it) })
+        trackAdapter.listener = { presenter.onQuestionClick(it) }
         listItems.adapter = trackAdapter
         listItems.layoutManager = LinearLayoutManager(this)
     }
 
     internal fun setupFilters() {
-        filterAdapater = FilterAdapter(this, SourceType.values().asList(), filterContainer, { presenter.onFilterClick() })
+        filterAdapter.setup(SourceType.values().asList(), filterContainer, { presenter.onFilterClick() })
     }
 
     override fun retrieveSearchQuery() = searchView.query.toString()
 
-    override fun retrieveSelectedSourceType() = filterAdapater.retrieveSelectedSourceType()
+    override fun retrieveSelectedSourceType() = filterAdapter.retrieveSelectedSourceType()
 
-    internal fun setupRefresh() = refreshLayout.setOnRefreshListener {
+    internal fun setupRefresh() {
+        refreshLayout.setOnRefreshListener { onRefresh() }
+    }
+
+    internal fun onRefresh() {
         presenter.loadTracks()
         refreshLayout.isRefreshing = false
     }
@@ -110,16 +116,14 @@ class MainActivity : ToolbarActivity(), MainContract.View {
         }
     }
 
-    override fun updateLoadingState(isLoading: Boolean) {
-        progressBar.visible = isLoading
-        listItems.visible = !isLoading
-
-        if (isLoading) emptyView.visible = false
+    override fun updateLoadingState(state:LoadingState) {
+        progressBar.visible = state == LoadingState.LOADING
+        listItems.visible = state == LoadingState.SHOW_RESULTS
+        emptyView.visible = state == LoadingState.NO_RESULTS
     }
 
     override fun updateTracks(tracks: List<Track>) {
         trackAdapter.updateItems(tracks)
-        emptyView.visible = tracks.isEmpty()
     }
 
     override fun showMessage(message: String) {
