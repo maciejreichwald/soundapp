@@ -1,6 +1,7 @@
 package com.rudearts.soundapp.di.app
 
 import android.content.Context
+import com.rudearts.soundapp.api.RestAPI
 import com.rudearts.soundapp.api.RestController
 import com.rudearts.soundapp.domain.LoadTracksFromAssets
 import com.rudearts.soundapp.domain.LoadTracksFromRest
@@ -23,8 +24,8 @@ class DomainModule {
 
     @Provides
     fun providesLoadTracksFromRest(
-            restController: RestController,
-            externalMapper: ExternalMapper):TrackLoadable.Rest = LoadTracksFromRest(restController, externalMapper)
+            restApi: RestAPI,
+            externalMapper: ExternalMapper):TrackLoadable.Rest = LoadTracksFromRest(restApi, externalMapper)
 
     @Provides
     fun providesLoadTracksUseCase(

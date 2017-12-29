@@ -1,7 +1,7 @@
 package com.rudearts.soundapp.domain
 
 import android.text.TextUtils
-import com.rudearts.soundapp.api.RestController
+import com.rudearts.soundapp.api.RestAPI
 import com.rudearts.soundapp.model.external.response.SearchResponse
 import com.rudearts.soundapp.model.filter.SourceType
 import com.rudearts.soundapp.model.filter.TrackFilter
@@ -13,7 +13,7 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class LoadTracksFromRest @Inject constructor(
-        internal val restController:RestController,
+        internal val restApi: RestAPI,
         internal val mapper:ExternalMapper) : TrackLoadable.Rest {
 
     override fun loadTracks(filter: TrackFilter): Single<List<Track>> = Single.create { subscriber ->
@@ -21,7 +21,7 @@ class LoadTracksFromRest @Inject constructor(
         when(filter.source) {
             SourceType.ASSET -> subscriber.onSuccess(emptyList())
             SourceType.REST,
-            SourceType.BOTH -> restController.provideRestApi().search(query)
+            SourceType.BOTH -> restApi.search(query)
                     .subscribe({ response -> onTracksLoaded(response, subscriber) },
                             {error -> subscriber.onError(error)})
         }

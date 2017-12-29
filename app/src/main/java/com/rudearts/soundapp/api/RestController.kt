@@ -39,6 +39,4 @@ class RestController {
 
         restApi = retrofit.create(RestAPI::class.java)
     }
-
-    fun provideRestApi() = restApi
 }

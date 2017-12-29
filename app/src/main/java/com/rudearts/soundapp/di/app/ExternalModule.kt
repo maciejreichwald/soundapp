@@ -1,6 +1,7 @@
 package com.rudearts.soundapp.di.app
 
 import android.content.Context
+import com.rudearts.soundapp.api.RestAPI
 import com.rudearts.soundapp.util.loader.ExternalMapper
 import com.rudearts.soundapp.api.RestController
 import com.rudearts.soundapp.util.DateUtil
@@ -22,7 +23,7 @@ class ExternalModule(private val context:Context) {
 
     @Provides
     @Singleton
-    fun provideRestController():RestController = RestController()
+    fun provideRestApi():RestAPI = RestController().restApi
 
     @Provides
     fun providesExternalMapper(dateUtil: DateUtil):ExternalMapper = ExternalMapper(context, dateUtil)
